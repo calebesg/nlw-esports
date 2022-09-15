@@ -10,7 +10,7 @@ export function GameBanner({ adsCount, bannerUrl, title }: GameBannerProps) {
       href=""
       className="relative rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
     >
-      <img src={bannerUrl} alt={title} />
+      <img className="w-full" src={bannerUrl} alt={title} />
 
       <div className="w-full pt-16 pb-4 px-4 bg-game-gradient absolute bottom-0">
         <strong className="text-white font-bold block">{title}</strong>
