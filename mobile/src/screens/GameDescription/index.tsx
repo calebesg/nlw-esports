@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Text,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRoute, useNavigation } from '@react-navigation/native'
@@ -76,7 +77,14 @@ export function GameDescription() {
             )}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.contentList}
+            contentContainerStyle={
+              duos.length > 0 ? styles.contentList : styles.emptyListContent
+            }
+            ListEmptyComponent={() => (
+              <Text style={styles.emptyListText}>
+                Não há anúncios publicados.
+              </Text>
+            )}
           />
         </ScrollView>
       </SafeAreaView>
