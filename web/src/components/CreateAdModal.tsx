@@ -58,7 +58,7 @@ export function CreateAdModal() {
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
 
-      <Dialog.Content className="bg-[#2A2634] py-8 px-10 text-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] rounded-lg shadow-lg shadow-black/25">
+      <Dialog.Content className="bg-[#2A2634] py-8 px-10 text-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2  w-screen h-screen md:h-auto md:w-[480px] overflow-y-scroll md:overflow-y-auto md:rounded-lg shadow-lg shadow-black/25">
         <Dialog.Title className="text-3xl font-black">
           Publique um anúncio
         </Dialog.Title>
@@ -126,20 +126,20 @@ export function CreateAdModal() {
             </div>
           </div>
 
-          <div className="flex gap-6">
+          <div className="flex flex-col md:flex-row gap-6">
             <div className="flex flex-col gap-2">
               <label htmlFor="weekDays">Quando costuma jogar?</label>
 
               <ToggleGroup.Root
                 type="multiple"
-                className="grid grid-cols-4 gap-2"
+                className="grid grid-cols-5 md:grid-cols-4 gap-2"
                 value={weekDays}
                 onValueChange={setWeekDays}
               >
                 <ToggleGroup.Item
                   value="0"
                   title="Domingo"
-                  className={`w-8 h-8 rounded ${
+                  className={`w-12 h-12 md:w-8 md:h-8 rounded ${
                     weekDays.includes('0') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -148,7 +148,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="1"
                   title="Segunda"
-                  className={`w-8 h-8 rounded ${
+                  className={`w-12 h-12 w-8 h-8 rounded ${
                     weekDays.includes('1') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -157,7 +157,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="2"
                   title="Terça"
-                  className={`w-8 h-8 rounded ${
+                  className={`w-12 h-12 w-8 h-8 rounded ${
                     weekDays.includes('2') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -166,7 +166,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="3"
                   title="Quarta"
-                  className={`w-8 h-8 rounded ${
+                  className={`w-12 h-12 w-8 h-8 rounded ${
                     weekDays.includes('3') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -175,7 +175,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="4"
                   title="Quinta"
-                  className={`w-8 h-8 rounded ${
+                  className={`w-12 h-12 w-8 h-8 rounded ${
                     weekDays.includes('4') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -184,7 +184,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="5"
                   title="Sexta"
-                  className={`w-8 h-8 rounded ${
+                  className={`w-12 h-12 w-8 h-8 rounded ${
                     weekDays.includes('5') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -193,7 +193,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="6"
                   title="Sábado"
-                  className={`w-8 h-8 rounded ${
+                  className={`w-12 h-12 w-8 h-8 rounded ${
                     weekDays.includes('6') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -236,7 +236,7 @@ export function CreateAdModal() {
             Costumo me conectar ao chat de voz
           </label>
 
-          <footer className="mt-4 flex justify-end gap-4">
+          <footer className="mt-4 flex flex-col justify-end gap-4">
             <Dialog.Close
               type="button"
               className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 transition-colors"
@@ -246,7 +246,7 @@ export function CreateAdModal() {
             </Dialog.Close>
             <button
               type="submit"
-              className="bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600 transition-colors"
+              className="bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center justify-center gap-3 hover:bg-violet-600 transition-colors"
             >
               <GameController size={24} />
               Encontrar duo

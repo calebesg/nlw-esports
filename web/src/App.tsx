@@ -28,10 +28,10 @@ function App() {
   }, [])
 
   return (
-    <div className="max-w-[1344px] flex flex-col items-center my-20 mx-auto">
-      <img src={logoImg} alt="NLW esports" />
+    <div className="max-w-[1344px] flex flex-col items-center mt-20 md:my-20 mx-auto">
+      <img src={logoImg} alt="NLW esports" className="w-[200px] md:w-auto" />
 
-      <h1 className="font-black text-6xl text-white mt-20">
+      <h1 className="font-black text-5xl text-center px-6 md:text-6xl text-white mt-20">
         Seu{' '}
         <span className="bg-nlw-gradient bg-clip-text text-transparent">
           duo
@@ -39,7 +39,7 @@ function App() {
         está aqui.
       </h1>
 
-      <div className="grid grid-cols-6 gap-6 mt-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 mt-16 px-4">
         {games.map(game => (
           <GameBanner
             key={game.id}
