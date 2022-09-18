@@ -1,3 +1,5 @@
+import { FormEvent, useEffect, useState } from 'react'
+import { useForm, SubmitHandler } from 'react-hook-form'
 import { CaretDown, Check, GameController } from 'phosphor-react'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as Checkbox from '@radix-ui/react-checkbox'
@@ -6,14 +8,29 @@ import * as ToggleGroup from '@radix-ui/react-toggle-group'
 import axios from 'axios'
 
 import { Input } from './Form/Input'
-import { FormEvent, useEffect, useState } from 'react'
+import { FieldMessage } from './Form/FieldMessage'
 
 interface Game {
   id: string
   name: string
 }
 
+interface FormInput {
+  name: string
+  yearsPlaying: string
+  discord: string
+  hoursStart: string
+  hoursEnd: string
+  useVoiceChannel: boolean
+}
+
 export function CreateAdModal() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInput>()
+
   const [games, setGames] = useState<Game[]>([])
   const [gameSelected, setGameSelected] = useState('')
   const [weekDays, setWeekDays] = useState<string[]>([])
@@ -54,16 +71,23 @@ export function CreateAdModal() {
     }
   }
 
+  const onSubmit: SubmitHandler<FormInput> = data => {
+    console.log(data)
+  }
+
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
 
-      <Dialog.Content className="bg-[#2A2634] py-8 px-10 text-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2  w-screen h-screen md:h-auto md:w-[480px] overflow-y-scroll md:overflow-y-auto md:rounded-lg shadow-lg shadow-black/25">
+      <Dialog.Content className="bg-[#2A2634] py-8 px-10 text-white fixed top-0 right-0 w-screen h-screen md:w-[480px] overflow-y-scroll shadow-lg shadow-black/25">
         <Dialog.Title className="text-3xl font-black">
           Publique um anúncio
         </Dialog.Title>
 
-        <form onSubmit={handleCreateAd} className="mt-8 flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mt-8 flex flex-col gap-4"
+        >
           <div className="flex flex-col gap-2">
             <label htmlFor="game" className="font-semibold">
               Qual o game?
@@ -103,10 +127,13 @@ export function CreateAdModal() {
           <div className="flex flex-col gap-2">
             <label htmlFor="name">Seu nome ou nickname</label>
             <Input
-              name="name"
+              register={register('name', { required: true })}
               id="name"
-              placeholder="Como te chamam dentro do game?"
+              placeholder={'Como te chamam dentro do game?'}
             />
+            {errors.name?.type === 'required' && (
+              <FieldMessage text="Preencha este campo" />
+            )}
           </div>
 
           <div className="flex flex-col md:grid grid-cols-2 gap-4 md:gap-6">
@@ -114,32 +141,49 @@ export function CreateAdModal() {
               <label htmlFor="yearsPlaying">Joga a quantos anos?</label>
 
               <Input
-                name="yearsPlaying"
+                register={register('yearsPlaying', {
+                  required: {
+                    value: true,
+                    message: 'Informe o seu tempo de jogo',
+                  },
+                  max: { value: 99, message: 'entre 0 - 20' },
+                })}
                 id="yearsPlaying"
                 type="number"
                 placeholder="Tudo bem ser ZERO!"
               />
+              {errors.yearsPlaying && (
+                <FieldMessage text={errors.yearsPlaying?.message} />
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="discord">Qual seu Discord?</label>
-              <Input name="discord" id="discord" placeholder="Usuario#000" />
+              <Input
+                register={register('discord', { required: true })}
+                name="discord"
+                id="discord"
+                placeholder="Usuario#000"
+              />
+              {errors.discord?.type === 'required' && (
+                <FieldMessage text="Informe seu Discord" />
+              )}
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <label htmlFor="weekDays">Quando costuma jogar?</label>
 
               <ToggleGroup.Root
                 type="multiple"
-                className="grid grid-cols-5 md:grid-cols-4 gap-2"
+                className="grid grid-cols-5 md:grid-cols-7 gap-2"
                 value={weekDays}
                 onValueChange={setWeekDays}
               >
                 <ToggleGroup.Item
                   value="0"
                   title="Domingo"
-                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
+                  className={`w-12 h-12 rounded ${
                     weekDays.includes('0') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -148,7 +192,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="1"
                   title="Segunda"
-                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
+                  className={`w-12 h-12 rounded ${
                     weekDays.includes('1') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -157,7 +201,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="2"
                   title="Terça"
-                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
+                  className={`w-12 h-12 rounded ${
                     weekDays.includes('2') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -166,7 +210,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="3"
                   title="Quarta"
-                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
+                  className={`w-12 h-12 rounded ${
                     weekDays.includes('3') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -175,7 +219,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="4"
                   title="Quinta"
-                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
+                  className={`w-12 h-12 rounded ${
                     weekDays.includes('4') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -184,7 +228,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="5"
                   title="Sexta"
-                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
+                  className={`w-12 h-12 rounded ${
                     weekDays.includes('5') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -193,7 +237,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="6"
                   title="Sábado"
-                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
+                  className={`w-12 h-12 rounded ${
                     weekDays.includes('6') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -203,19 +247,31 @@ export function CreateAdModal() {
             </div>
             <div className="flex flex-col gap-2 flex-1">
               <label htmlFor="hoursStart">Qual horário do dia?</label>
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  type="time"
-                  name="hoursStart"
-                  id="hoursStart"
-                  placeholder="De"
-                />
-                <Input
-                  type="time"
-                  name="hoursEnd"
-                  id="hoursEnd"
-                  placeholder="Até"
-                />
+              <div className="flex gap-4">
+                <div className="flex flex-col flex-1">
+                  <Input
+                    register={register('hoursStart', { required: true })}
+                    type="time"
+                    name="hoursStart"
+                    id="hoursStart"
+                    placeholder="De"
+                  />
+                  {errors.hoursStart?.type === 'required' && (
+                    <FieldMessage text="Hora de início" />
+                  )}
+                </div>
+                <div className="flex flex-col flex-1">
+                  <Input
+                    register={register('hoursEnd', { required: true })}
+                    type="time"
+                    name="hoursEnd"
+                    id="hoursEnd"
+                    placeholder="Até"
+                  />
+                  {errors.hoursEnd?.type === 'required' && (
+                    <FieldMessage text="Hora de parar" />
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -238,7 +294,7 @@ export function CreateAdModal() {
 
           <footer className="mt-4 flex flex-col md:flex-row justify-end gap-4">
             <Dialog.Close
-              type="button"
+              type="reset"
               className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 transition-colors"
               onClick={() => setGameSelected('')}
             >
