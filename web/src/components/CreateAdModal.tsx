@@ -109,7 +109,7 @@ export function CreateAdModal() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="flex flex-col md:grid grid-cols-2 gap-4 md:gap-6">
             <div className="flex flex-col gap-2">
               <label htmlFor="yearsPlaying">Joga a quantos anos?</label>
 
@@ -139,7 +139,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="0"
                   title="Domingo"
-                  className={`w-12 h-12 md:w-8 md:h-8 rounded ${
+                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
                     weekDays.includes('0') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -148,7 +148,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="1"
                   title="Segunda"
-                  className={`w-12 h-12 w-8 h-8 rounded ${
+                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
                     weekDays.includes('1') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -157,7 +157,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="2"
                   title="Terça"
-                  className={`w-12 h-12 w-8 h-8 rounded ${
+                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
                     weekDays.includes('2') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -166,7 +166,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="3"
                   title="Quarta"
-                  className={`w-12 h-12 w-8 h-8 rounded ${
+                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
                     weekDays.includes('3') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -175,7 +175,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="4"
                   title="Quinta"
-                  className={`w-12 h-12 w-8 h-8 rounded ${
+                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
                     weekDays.includes('4') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -184,7 +184,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="5"
                   title="Sexta"
-                  className={`w-12 h-12 w-8 h-8 rounded ${
+                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
                     weekDays.includes('5') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -193,7 +193,7 @@ export function CreateAdModal() {
                 <ToggleGroup.Item
                   value="6"
                   title="Sábado"
-                  className={`w-12 h-12 w-8 h-8 rounded ${
+                  className={`w-12 h-12 md:w-10 md:h-10 rounded ${
                     weekDays.includes('6') ? 'bg-violet-500' : 'bg-zinc-900'
                   }`}
                 >
@@ -236,7 +236,7 @@ export function CreateAdModal() {
             Costumo me conectar ao chat de voz
           </label>
 
-          <footer className="mt-4 flex flex-col justify-end gap-4">
+          <footer className="mt-4 flex flex-col md:flex-row justify-end gap-4">
             <Dialog.Close
               type="button"
               className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 transition-colors"

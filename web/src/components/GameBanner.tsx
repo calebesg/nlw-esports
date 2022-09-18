@@ -8,7 +8,7 @@ export function GameBanner({ adsCount, bannerUrl, title }: GameBannerProps) {
   return (
     <a
       href=""
-      className="relative rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
+      className="relative keen-slider__slide rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
     >
       <img className="w-full" src={bannerUrl} alt={title} />
 
