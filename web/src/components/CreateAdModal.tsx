@@ -16,6 +16,7 @@ interface Game {
 }
 
 interface FormInput {
+  game: any
   name: string
   yearsPlaying: string
   discord: string
@@ -32,8 +33,8 @@ export function CreateAdModal() {
   } = useForm<FormInput>()
 
   const [games, setGames] = useState<Game[]>([])
-  const [gameSelected, setGameSelected] = useState('')
-  const [weekDays, setWeekDays] = useState<string[]>([])
+  const [gameSelected, setGameSelected] = useState({ value: '', error: '' })
+  const [weekDays, setWeekDays] = useState({ value: [] as string[], error: '' })
   const [useVoiceChannel, setUseVoiceChannel] = useState(false)
 
   useEffect(() => {
@@ -42,37 +43,51 @@ export function CreateAdModal() {
       .then(data => setGames(data))
   }, [])
 
-  async function handleCreateAd(event: FormEvent) {
-    event.preventDefault()
+  // async function handleCreateAd(event: FormEvent) {
+  //   event.preventDefault()
 
-    const formData = new FormData(event.target as HTMLFormElement)
-    const data = Object.fromEntries(formData)
+  //   const formData = new FormData(event.target as HTMLFormElement)
+  //   const data = Object.fromEntries(formData)
 
-    if (!data.name || weekDays.length === 0 || !gameSelected) {
-      return
-    }
+  //   if (!data.name || weekDays.length === 0 || !gameSelected) {
+  //     return
+  //   }
 
-    const ad = {
-      name: data.name,
-      yearsPlaying: +data.yearsPlaying,
-      discord: data.discord,
-      weekDays: weekDays.map(Number),
-      hoursStart: data.hoursStart,
-      hoursEnd: data.hoursEnd,
-      useVoiceChannel,
-    }
+  //   const ad = {
+  //     name: data.name,
+  //     yearsPlaying: +data.yearsPlaying,
+  //     discord: data.discord,
+  //     weekDays: weekDays.map(Number),
+  //     hoursStart: data.hoursStart,
+  //     hoursEnd: data.hoursEnd,
+  //     useVoiceChannel,
+  //   }
 
-    try {
-      await axios.post(`http://localhost:3333/games/${gameSelected}/ads`, ad)
+  //   try {
+  //     await axios.post(`http://localhost:3333/games/${gameSelected}/ads`, ad)
 
-      alert('Cadastrado com sucesso!')
-    } catch (error) {
-      alert('erro ao cadastrar!')
-    }
+  //     alert('Cadastrado com sucesso!')
+  //   } catch (error) {
+  //     alert('erro ao cadastrar!')
+  //   }
+  // }
+
+  const handleCreateAd: SubmitHandler<FormInput> = data => {
+    console.log(data)
   }
 
-  const onSubmit: SubmitHandler<FormInput> = data => {
-    console.log(data)
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault()
+
+    if (!gameSelected.value) {
+      setGameSelected({ ...gameSelected, error: 'Escolha o game' })
+    }
+
+    if (weekDays.value.length === 0) {
+      setWeekDays({ ...weekDays, error: 'Selecione no mínimo 1 dia' })
+    }
+
+    handleSubmit(handleCreateAd).call(event)
   }
 
   return (
@@ -84,19 +99,22 @@ export function CreateAdModal() {
           Publique um anúncio
         </Dialog.Title>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mt-8 flex flex-col gap-4"
-        >
+        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="game" className="font-semibold">
               Qual o game?
             </label>
 
-            <Select.Root onValueChange={setGameSelected}>
+            <Select.Root
+              onValueChange={text =>
+                setGameSelected({ value: text, error: '' })
+              }
+            >
               <Select.Trigger
                 aria-label="Games"
-                className="flex items-center justify-between bg-zinc-900 py-3 px-4 rounded text-sm"
+                className={`flex items-center justify-between bg-zinc-900 py-3 px-4 rounded text-sm ${
+                  gameSelected.value ? 'text-white' : 'text-zinc-500'
+                }`}
               >
                 <Select.Value placeholder="Selecione o game que deseja jogar" />
                 <Select.Icon>
@@ -112,7 +130,7 @@ export function CreateAdModal() {
                         key={game.id}
                         value={game.id}
                         className={`py-2 ${
-                          game.id === gameSelected && 'text-violet-400'
+                          game.id === gameSelected.value && 'text-violet-400'
                         }`}
                       >
                         <Select.ItemText>{game.name}</Select.ItemText>
@@ -122,10 +140,13 @@ export function CreateAdModal() {
                 </Select.Content>
               </Select.Portal>
             </Select.Root>
+            {gameSelected.error && <FieldMessage text={gameSelected.error} />}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="name">Seu nome ou nickname</label>
+            <label htmlFor="name" className="font-semibold">
+              Seu nome ou nickname
+            </label>
             <Input
               register={register('name', { required: true })}
               id="name"
@@ -138,7 +159,9 @@ export function CreateAdModal() {
 
           <div className="flex flex-col md:grid grid-cols-2 gap-4 md:gap-6">
             <div className="flex flex-col gap-2">
-              <label htmlFor="yearsPlaying">Joga a quantos anos?</label>
+              <label htmlFor="yearsPlaying" className="font-semibold">
+                Joga a quantos anos?
+              </label>
 
               <Input
                 register={register('yearsPlaying', {
@@ -157,7 +180,9 @@ export function CreateAdModal() {
               )}
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="discord">Qual seu Discord?</label>
+              <label htmlFor="discord" className="font-semibold">
+                Qual seu Discord?
+              </label>
               <Input
                 register={register('discord', { required: true })}
                 name="discord"
@@ -172,83 +197,105 @@ export function CreateAdModal() {
 
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <label htmlFor="weekDays">Quando costuma jogar?</label>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="weekDays" className="font-semibold">
+                  Quando costuma jogar?
+                </label>
 
-              <ToggleGroup.Root
-                type="multiple"
-                className="grid grid-cols-5 md:grid-cols-7 gap-2"
-                value={weekDays}
-                onValueChange={setWeekDays}
-              >
-                <ToggleGroup.Item
-                  value="0"
-                  title="Domingo"
-                  className={`w-12 h-12 rounded ${
-                    weekDays.includes('0') ? 'bg-violet-500' : 'bg-zinc-900'
-                  }`}
+                <ToggleGroup.Root
+                  type="multiple"
+                  className="grid grid-cols-5 md:grid-cols-7 gap-2"
+                  value={weekDays.value}
+                  onValueChange={value => setWeekDays({ value, error: '' })}
                 >
-                  D
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="1"
-                  title="Segunda"
-                  className={`w-12 h-12 rounded ${
-                    weekDays.includes('1') ? 'bg-violet-500' : 'bg-zinc-900'
-                  }`}
-                >
-                  S
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="2"
-                  title="Terça"
-                  className={`w-12 h-12 rounded ${
-                    weekDays.includes('2') ? 'bg-violet-500' : 'bg-zinc-900'
-                  }`}
-                >
-                  T
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="3"
-                  title="Quarta"
-                  className={`w-12 h-12 rounded ${
-                    weekDays.includes('3') ? 'bg-violet-500' : 'bg-zinc-900'
-                  }`}
-                >
-                  Q
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="4"
-                  title="Quinta"
-                  className={`w-12 h-12 rounded ${
-                    weekDays.includes('4') ? 'bg-violet-500' : 'bg-zinc-900'
-                  }`}
-                >
-                  Q
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="5"
-                  title="Sexta"
-                  className={`w-12 h-12 rounded ${
-                    weekDays.includes('5') ? 'bg-violet-500' : 'bg-zinc-900'
-                  }`}
-                >
-                  S
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="6"
-                  title="Sábado"
-                  className={`w-12 h-12 rounded ${
-                    weekDays.includes('6') ? 'bg-violet-500' : 'bg-zinc-900'
-                  }`}
-                >
-                  S
-                </ToggleGroup.Item>
-              </ToggleGroup.Root>
+                  <ToggleGroup.Item
+                    value="0"
+                    title="Domingo"
+                    className={`w-12 h-12 rounded ${
+                      weekDays.value.includes('0')
+                        ? 'bg-violet-500'
+                        : 'bg-zinc-900'
+                    }`}
+                  >
+                    D
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="1"
+                    title="Segunda"
+                    className={`w-12 h-12 rounded ${
+                      weekDays.value.includes('1')
+                        ? 'bg-violet-500'
+                        : 'bg-zinc-900'
+                    }`}
+                  >
+                    S
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="2"
+                    title="Terça"
+                    className={`w-12 h-12 rounded ${
+                      weekDays.value.includes('2')
+                        ? 'bg-violet-500'
+                        : 'bg-zinc-900'
+                    }`}
+                  >
+                    T
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="3"
+                    title="Quarta"
+                    className={`w-12 h-12 rounded ${
+                      weekDays.value.includes('3')
+                        ? 'bg-violet-500'
+                        : 'bg-zinc-900'
+                    }`}
+                  >
+                    Q
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="4"
+                    title="Quinta"
+                    className={`w-12 h-12 rounded ${
+                      weekDays.value.includes('4')
+                        ? 'bg-violet-500'
+                        : 'bg-zinc-900'
+                    }`}
+                  >
+                    Q
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="5"
+                    title="Sexta"
+                    className={`w-12 h-12 rounded ${
+                      weekDays.value.includes('5')
+                        ? 'bg-violet-500'
+                        : 'bg-zinc-900'
+                    }`}
+                  >
+                    S
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="6"
+                    title="Sábado"
+                    className={`w-12 h-12 rounded ${
+                      weekDays.value.includes('6')
+                        ? 'bg-violet-500'
+                        : 'bg-zinc-900'
+                    }`}
+                  >
+                    S
+                  </ToggleGroup.Item>
+                </ToggleGroup.Root>
+              </div>
+              {weekDays.error && <FieldMessage text={weekDays.error} />}
             </div>
+
             <div className="flex flex-col gap-2 flex-1">
-              <label htmlFor="hoursStart">Qual horário do dia?</label>
+              <label htmlFor="hoursStart" className="font-semibold">
+                Qual horário do dia?
+              </label>
               <div className="flex gap-4">
-                <div className="flex flex-col flex-1">
+                <div className="flex flex-col flex-1 gap-2">
                   <Input
                     register={register('hoursStart', { required: true })}
                     type="time"
@@ -260,7 +307,7 @@ export function CreateAdModal() {
                     <FieldMessage text="Hora de início" />
                   )}
                 </div>
-                <div className="flex flex-col flex-1">
+                <div className="flex flex-col flex-1 gap-2">
                   <Input
                     register={register('hoursEnd', { required: true })}
                     type="time"
@@ -296,7 +343,7 @@ export function CreateAdModal() {
             <Dialog.Close
               type="reset"
               className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 transition-colors"
-              onClick={() => setGameSelected('')}
+              onClick={() => setGameSelected({ value: '', error: '' })}
             >
               Cancelar
             </Dialog.Close>

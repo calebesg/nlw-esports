@@ -3,5 +3,5 @@ interface FieldMessageProps {
 }
 
 export function FieldMessage({ text }: FieldMessageProps) {
-  return <span className="text-red-400">{text}</span>
+  return <span className="text-red-400 text-sm">{text}</span>
 }
