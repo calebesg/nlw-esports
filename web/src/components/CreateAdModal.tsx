@@ -5,10 +5,14 @@ import * as Dialog from '@radix-ui/react-dialog'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import * as Select from '@radix-ui/react-select'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
+import { ToastContainer, toast } from 'react-toastify'
+
 import axios from 'axios'
 
 import { Input } from './Form/Input'
 import { FieldMessage } from './Form/FieldMessage'
+
+import 'react-toastify/dist/ReactToastify.css'
 
 interface Game {
   id: string
@@ -26,6 +30,11 @@ interface FormInputs {
 }
 
 export function CreateAdModal() {
+  const [games, setGames] = useState<Game[]>([])
+  const [gameSelected, setGameSelected] = useState({ value: '', error: '' })
+  const [weekDays, setWeekDays] = useState({ value: [] as string[], error: '' })
+  const [useVoiceChannel, setUseVoiceChannel] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -33,16 +42,27 @@ export function CreateAdModal() {
     reset,
   } = useForm<FormInputs>()
 
-  const [games, setGames] = useState<Game[]>([])
-  const [gameSelected, setGameSelected] = useState({ value: '', error: '' })
-  const [weekDays, setWeekDays] = useState({ value: [] as string[], error: '' })
-  const [useVoiceChannel, setUseVoiceChannel] = useState(false)
-
   useEffect(() => {
     fetch('http://localhost:3333/games')
       .then(response => response.json())
       .then(data => setGames(data))
   }, [])
+
+  const clearInputForm = () => {
+    setGameSelected({ value: '', error: '' })
+    setWeekDays({ value: [], error: '' })
+    setUseVoiceChannel(false)
+
+    reset({
+      discord: '',
+      game: '',
+      hoursEnd: '',
+      hoursStart: '',
+      name: '',
+      useVoiceChannel: false,
+      yearsPlaying: '',
+    })
+  }
 
   const handleCreateAd: SubmitHandler<FormInputs> = async data => {
     console.log(data)
@@ -71,9 +91,10 @@ export function CreateAdModal() {
         ad
       )
 
-      alert('Cadastrado com sucesso!')
-    } catch (error) {
-      alert('erro ao cadastrar!')
+      toast.success('Cadastrado com Sucesso!', { theme: 'colored' })
+      clearInputForm()
+    } catch (error: any) {
+      toast.error(`Ops! ${error?.message}`, { theme: 'colored' })
     }
   }
 
@@ -91,24 +112,9 @@ export function CreateAdModal() {
     handleSubmit(handleCreateAd).call(event)
   }
 
-  const clearInputForm = () => {
-    setGameSelected({ value: '', error: '' })
-    setWeekDays({ value: [], error: '' })
-    setUseVoiceChannel(false)
-
-    reset({
-      discord: '',
-      game: '',
-      hoursEnd: '',
-      hoursStart: '',
-      name: '',
-      useVoiceChannel: false,
-      yearsPlaying: '',
-    })
-  }
-
   return (
     <Dialog.Portal>
+      <ToastContainer />
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
 
       <Dialog.Content className="bg-[#2A2634] py-8 px-10 text-white fixed top-0 right-0 w-screen h-screen md:w-[480px] overflow-y-auto shadow-lg shadow-black/25 scrollbar-thin scrollbar-thumb-zinc-900 scrollbar-track-[#2A2634]">
