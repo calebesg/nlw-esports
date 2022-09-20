@@ -111,7 +111,7 @@ export function CreateAdModal() {
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
 
-      <Dialog.Content className="bg-[#2A2634] py-8 px-10 text-white fixed top-0 right-0 w-screen h-screen md:w-[480px] overflow-y-scroll shadow-lg shadow-black/25">
+      <Dialog.Content className="bg-[#2A2634] py-8 px-10 text-white fixed top-0 right-0 w-screen h-screen md:w-[480px] overflow-y-auto shadow-lg shadow-black/25 scrollbar-thin scrollbar-thumb-zinc-900 scrollbar-track-[#2A2634]">
         <Dialog.Title className="text-3xl font-black">
           Publique um anúncio
         </Dialog.Title>
