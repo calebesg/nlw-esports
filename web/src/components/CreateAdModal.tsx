@@ -15,7 +15,7 @@ interface Game {
   name: string
 }
 
-interface FormInput {
+interface FormInputs {
   game: any
   name: string
   yearsPlaying: string
@@ -30,7 +30,8 @@ export function CreateAdModal() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormInput>()
+    reset,
+  } = useForm<FormInputs>()
 
   const [games, setGames] = useState<Game[]>([])
   const [gameSelected, setGameSelected] = useState({ value: '', error: '' })
@@ -43,37 +44,37 @@ export function CreateAdModal() {
       .then(data => setGames(data))
   }, [])
 
-  // async function handleCreateAd(event: FormEvent) {
-  //   event.preventDefault()
-
-  //   const formData = new FormData(event.target as HTMLFormElement)
-  //   const data = Object.fromEntries(formData)
-
-  //   if (!data.name || weekDays.length === 0 || !gameSelected) {
-  //     return
-  //   }
-
-  //   const ad = {
-  //     name: data.name,
-  //     yearsPlaying: +data.yearsPlaying,
-  //     discord: data.discord,
-  //     weekDays: weekDays.map(Number),
-  //     hoursStart: data.hoursStart,
-  //     hoursEnd: data.hoursEnd,
-  //     useVoiceChannel,
-  //   }
-
-  //   try {
-  //     await axios.post(`http://localhost:3333/games/${gameSelected}/ads`, ad)
-
-  //     alert('Cadastrado com sucesso!')
-  //   } catch (error) {
-  //     alert('erro ao cadastrar!')
-  //   }
-  // }
-
-  const handleCreateAd: SubmitHandler<FormInput> = data => {
+  const handleCreateAd: SubmitHandler<FormInputs> = async data => {
     console.log(data)
+
+    if (!gameSelected.value || weekDays.value.length === 0) {
+      !gameSelected.value &&
+        setGameSelected({ ...gameSelected, error: 'Escolha o game' })
+      weekDays.value.length === 0 &&
+        setWeekDays({ ...weekDays, error: 'Selecione no mínimo 1 dia' })
+      return
+    }
+
+    const ad = {
+      name: data.name,
+      yearsPlaying: +data.yearsPlaying,
+      discord: data.discord,
+      weekDays: weekDays.value.map(Number),
+      hoursStart: data.hoursStart,
+      hoursEnd: data.hoursEnd,
+      useVoiceChannel,
+    }
+
+    try {
+      await axios.post(
+        `http://localhost:3333/games/${gameSelected.value}/ads`,
+        ad
+      )
+
+      alert('Cadastrado com sucesso!')
+    } catch (error) {
+      alert('erro ao cadastrar!')
+    }
   }
 
   const onSubmit = (event: FormEvent) => {
@@ -88,6 +89,22 @@ export function CreateAdModal() {
     }
 
     handleSubmit(handleCreateAd).call(event)
+  }
+
+  const clearInputForm = () => {
+    setGameSelected({ value: '', error: '' })
+    setWeekDays({ value: [], error: '' })
+    setUseVoiceChannel(false)
+
+    reset({
+      discord: '',
+      game: '',
+      hoursEnd: '',
+      hoursStart: '',
+      name: '',
+      useVoiceChannel: false,
+      yearsPlaying: '',
+    })
   }
 
   return (
@@ -343,7 +360,7 @@ export function CreateAdModal() {
             <Dialog.Close
               type="reset"
               className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 transition-colors"
-              onClick={() => setGameSelected({ value: '', error: '' })}
+              onClick={clearInputForm}
             >
               Cancelar
             </Dialog.Close>
