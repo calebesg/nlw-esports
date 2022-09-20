@@ -9,6 +9,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 )
 
 // 1 - Adicionar responsividade ==> finish
-// 2 - Criar slider com keen-slider
-// 3 - Validar campos com react hooks form
+// 2 - Criar slider com keen-slider ==> finish
+// 3 - Validar campos com react hooks form ==> in progress
 // 4 - Login com discord
